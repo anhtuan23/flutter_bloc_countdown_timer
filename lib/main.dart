@@ -3,6 +3,9 @@ import 'package:bloc_timer/ticker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'actions_widget.dart';
+import 'background_widget.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -33,32 +36,39 @@ class Timer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text("Flutter Timer")),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 100.0),
-              child: Center(
-                child: BlocBuilder<TimerBloc, TimerState>(
-                  builder: (context, state) {
-                    final String minuteStr = ((state.duration / 60) % 60)
-                        .floor()
-                        .toString()
-                        .padLeft(2, '0');
-                    final String secondStr = (state.duration % 60)
-                        .floor()
-                        .toString()
-                        .padLeft(2, '0');
-                    return Text(
-                      '$minuteStr:$secondStr',
-                      style: Timer.timerTextStyle,
-                    );
-                  },
+        body: Stack(
+          children: [Background(), Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 100.0),
+                child: Center(
+                  child: BlocBuilder<TimerBloc, TimerState>(
+                    builder: (context, state) {
+                      final String minuteStr = ((state.duration / 60) % 60)
+                          .floor()
+                          .toString()
+                          .padLeft(2, '0');
+                      final String secondStr = (state.duration % 60)
+                          .floor()
+                          .toString()
+                          .padLeft(2, '0');
+                      return Text(
+                        '$minuteStr:$secondStr',
+                        style: Timer.timerTextStyle,
+                      );
+                    },
+                  ),
                 ),
               ),
-            )
-          ],
+              BlocBuilder<TimerBloc, TimerState>(
+                condition: (previous, current) =>
+                    current.runtimeType != previous.runtimeType,
+                builder: (context, state) => ActionsWidget(),
+              )
+            ],
+          )],
         ));
   }
 }
